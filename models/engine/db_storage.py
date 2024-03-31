@@ -84,31 +84,3 @@ class DBStorage():
     def close(self):
         """Closes the session"""
         self.__session.close()
-
-    def get(self, cls, id):
-        """Retrieve only one object"""
-        if cls is not None and id is not None:
-            if type(cls) == str:
-                cls = eval(cls)
-            objects = self.__session.query(cls).all()
-            for obj in objects:
-                if obj.id == id:
-                    return obj
-            return None
-        else:
-            return None
-
-    def count(self, cls=None):
-        """
-        Count the number of objects in storage
-        """
-        total = 0
-        if cls:
-            if type(cls) is str:
-                cls = eval(cls)
-            total = self.__session.query(cls).count()
-
-        elif cls is None:
-            for cls in classes.values():
-                total += self.__session.query(cls).count()
-        return total
