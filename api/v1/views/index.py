@@ -16,9 +16,7 @@ from models.review import Review
 def status():
     """Endpoint that retrieves the status"""
 
-    result = {
-        "status": "OK"
-    }
+    result = {"status": "OK"}
     return jsonify(result)
 
 
