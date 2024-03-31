@@ -11,11 +11,8 @@ def get_states():
     """
     Retrieves the list of all State objects
     """
-    all_states = storage.all(State).values()
-    list_states = []
-    for state in all_states:
-        list_states.append(state.to_dict())
-    return jsonify(list_states)
+    states = storage.all(State).values()
+    return jsonify([state.to_dict() for state in states])
 
 
 @app_views.route('/states/<state_id>', methods=['GET'], strict_slashes=False)
@@ -82,5 +79,5 @@ def put_state(state_id):
     for key, value in data.items():
         if key not in ignore:
             setattr(state, key, value)
-    storage.save()
+    state.save()
     return make_response(jsonify(state.to_dict()), 200)
