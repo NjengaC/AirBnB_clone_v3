@@ -90,10 +90,7 @@ class FileStorage:
             for obj in objects.values():
                 if obj.id == id:
                     return obj
-#            key = str(cls) + '.' + id
-#            key = eval(key)
-#            obj = self.__objects.get(key, None)
-            return obj
+            return None
 
         else:
             return None

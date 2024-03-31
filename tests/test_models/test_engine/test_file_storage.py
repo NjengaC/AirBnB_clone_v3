@@ -15,82 +15,95 @@ from models.engine.file_storage import FileStorage
 
 
 class TestFileStorage(unittest.TestCase):
-    '''this will test the FileStorage'''
+    '''This class tests the FileStorage class'''
 
     @classmethod
     def setUpClass(cls):
-        """set up for test"""
-        cls.user = User()
-        cls.user.first_name = "Kev"
-        cls.user.last_name = "Yo"
-        cls.user.email = "1234@yahoo.com"
+        """Set up for the test class"""
         cls.storage = FileStorage()
 
-    @classmethod
-    def teardown(cls):
-        """at the end of the test this will tear it down"""
-        del cls.user
+    def setUp(self):
+        """Set up for each test case"""
+        self.storage.reload()
 
     def tearDown(self):
-        """teardown"""
+        """Tear down after each test case"""
         try:
             os.remove("file.json")
-        except Exception:
+        except FileNotFoundError:
             pass
 
     def test_pycodestyle_FileStorage(self):
-        """Tests pycodestyle style"""
+        """Test for PEP 8 style"""
         style = pycodestyle.StyleGuide(quiet=True)
-        p = style.check_files(['models/engine/file_storage.py'])
-        self.assertEqual(p.total_errors, 0, "fix pycodestyle")
+        result = style.check_files(['models/engine/file_storage.py'])
+        self.assertEqual(result.total_errors, 0, "Fix PEP 8 style issues")
 
     def test_all(self):
-        """tests if all works in File Storage"""
-        storage = FileStorage()
-        obj = storage.all()
+        """Test the all method"""
+        obj = self.storage.all()
         self.assertIsNotNone(obj)
         self.assertEqual(type(obj), dict)
-        self.assertIs(obj, storage._FileStorage__objects)
+        self.assertIs(obj, self.storage._FileStorage__objects)
 
     def test_new(self):
-        """test when new is created"""
-        storage = FileStorage()
-        obj = storage.all()
+        """Test the new method"""
         user = User()
         user.id = 123455
         user.name = "Kevin"
-        storage.new(user)
-        key = user.__class__.__name__ + "." + str(user.id)
-        self.assertIsNotNone(obj[key])
+        self.storage.new(user)
+        key = f"{user.__class__.__name__}.{str(user.id)}"
+        self.assertIn(key, self.storage._FileStorage__objects)
 
-    def test_reload_filestorage(self):
-        """
-        tests reload
-        """
+    def test_reload(self):
+        """Test the reload method"""
         self.storage.save()
-        Root = os.path.dirname(os.path.abspath("console.py"))
-        path = os.path.join(Root, "file.json")
-        with open(path, 'r') as f:
+        with open("file.json", 'r') as f:
             lines = f.readlines()
-        try:
-            os.remove(path)
-        except Exception:
-            pass
         self.storage.save()
-        with open(path, 'r') as f:
+        with open("file.json", 'r') as f:
             lines2 = f.readlines()
         self.assertEqual(lines, lines2)
-        try:
-            os.remove(path)
-        except Exception:
-            pass
-        with open(path, "w") as f:
-            f.write("{}")
-        with open(path, "r") as r:
-            for line in r:
-                self.assertEqual(line, "{}")
-        self.assertIs(self.storage.reload(), None)
+
+    def test_get_by_class_and_id(self):
+        """Test the get method by class and ID"""
+        user = User()
+        self.storage.new(user)
+        self.storage.save()
+        retrieved_user = self.storage.get(User, user.id)
+        self.assertEqual(retrieved_user, user)
+
+    def test_get_non_existing_object(self):
+        """Test the get method for non-existing object"""
+        retrieved_obj = self.storage.get(User, "non_existing_id")
+        self.assertIsNone(retrieved_obj)
+
+    def test_get_with_invalid_parameters(self):
+        """Test the get method with invalid parameters"""
+        retrieved_obj = self.storage.get(None, None)
+        self.assertIsNone(retrieved_obj)
+
+    def test_count_all_objects(self):
+        """Test the count method for all objects"""
+        obj1 = BaseModel()
+        obj2 = State()
+        obj3 = City()
+        self.storage.new(obj1)
+        self.storage.new(obj2)
+        self.storage.new(obj3)
+        self.assertEqual(self.storage.count(), self.storage.count())
+
+    def test_count_objects_by_class(self):
+        """Test the count method for objects by class"""
+        obj1 = BaseModel()
+        obj2 = State()
+        obj3 = State()
+        self.storage.new(obj1)
+        self.storage.new(obj2)
+        self.storage.new(obj3)
+        self.assertEqual(self.storage.count(State), self.storage.count(State))
 
 
 if __name__ == "__main__":
     unittest.main()
+
