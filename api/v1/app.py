@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Main Module
+Main docs for app module
 """
 
 from os import getenv
@@ -22,11 +22,13 @@ def teardown_appcontext(exception):
 
 @app.errorhandler(404)
 def error_404(error):
-    """HANDLES PAGE NOT FOUND(404)"""
+    """
+    Handles custorm json(404)
+    """
     return jsonify({'error': 'Not found'}), 404
 
 
 if __name__ == "__main__":
-    host = getenv("HBNB_API_HOST", "0.0.0.0")
-    port = int(getenv("HBNB_API_PORT", 5000))
+    host = getenv("HBNB_API_HOST")
+    port = int(getenv("HBNB_API_PORT"))
     app.run(host=host, port=port, threaded=True, debug=True)
