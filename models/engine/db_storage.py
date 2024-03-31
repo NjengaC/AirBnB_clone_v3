@@ -23,6 +23,9 @@ class DBStorage():
     __session = None
 
     def __init__(self):
+        """
+        initialisation
+        """
         user = getenv("HBNB_MYSQL_USER")
         passwd = getenv("HBNB_MYSQL_PWD")
         env = getenv("HBNB_ENV")
@@ -30,7 +33,7 @@ class DBStorage():
         db = getenv("HBNB_MYSQL_DB")
 
         self.__engine = (create_engine(f"mysql+mysqldb://{user}:"
-            f"{passwd}@{host}/{db}", pool_pre_ping=True))
+                         f"{passwd}@{host}/{db}", pool_pre_ping=True))
 
         if env == "test":
             Base.metadata.drop_all(self.__engine)
@@ -87,8 +90,11 @@ class DBStorage():
         if cls is not None and id is not None:
             if type(cls) == str:
                 cls = eval(cls)
-            result = self.__session.query(cls).filter(id == id).first()
-            return result
+            objects = self.__session.query(cls).all()
+            for obj in objects:
+                if obj.id == id:
+                    return obj
+            return None
         else:
             return None
 
