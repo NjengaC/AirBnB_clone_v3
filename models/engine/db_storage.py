@@ -87,8 +87,11 @@ class DBStorage():
         if cls is not None and id is not None:
             if type(cls) == str:
                 cls = eval(cls)
-            result = self.__session.query(cls).filter(id == id).first()
-            return result
+            objects = self.__session.query(cls).all()
+            for obj in objects:
+                if obj.id == id:
+                    return obj
+            return None
         else:
             return None
 
