@@ -1,12 +1,13 @@
 #!/usr/bin/python3
+"""
+Module initialises the baseodel with requirements as shown
+"""
 import models
 import uuid
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base
-"""
-Module initialises the baseodel with requirements as shown
-"""
+
 
 Base = declarative_base()
 
