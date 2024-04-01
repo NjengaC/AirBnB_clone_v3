@@ -44,7 +44,7 @@ class DBStorage:
             returns a dictionary of __object
         """
         dic = {}
-        if cls and cls in classes:
+        if cls is not None:
             if type(cls) is str:
                 cls = eval(cls)
             query = self.__session.query(cls)
