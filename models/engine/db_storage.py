@@ -3,13 +3,17 @@
 from os import getenv
 from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
 from sqlalchemy import create_engine
-from models.base_model import Base
+from models.base_model import BaseModel, Base
 from models.state import State
 from models.city import City
 from models.user import User
 from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
+
+classes = {'User': User,
+           'State': State, 'City': City, 'Amenity': Amenity,
+           'Place': Place, 'Review': Review}
 
 
 class DBStorage():
@@ -19,6 +23,9 @@ class DBStorage():
     __session = None
 
     def __init__(self):
+        """
+        initialisation
+        """
         user = getenv("HBNB_MYSQL_USER")
         passwd = getenv("HBNB_MYSQL_PWD")
         env = getenv("HBNB_ENV")
@@ -77,3 +84,31 @@ class DBStorage():
     def close(self):
         """Closes the session"""
         self.__session.close()
+
+    def get(self, cls, id):
+        """Retrieve only one object"""
+        if cls is not None and id is not None:
+            if type(cls) == str:
+                cls = eval(cls)
+            objects = self.__session.query(cls).all()
+            for obj in objects:
+                if obj.id == id:
+                    return obj
+            return None
+        else:
+            return None
+
+    def count(self, cls=None):
+        """
+        Count the number of objects in storage
+        """
+        total = 0
+        if cls:
+            if type(cls) is str:
+                cls = eval(cls)
+            total = self.__session.query(cls).count()
+
+        elif cls is None:
+            for cls in classes.values():
+                total += self.__session.query(cls).count()
+        return total
