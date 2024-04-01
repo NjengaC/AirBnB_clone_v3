@@ -12,6 +12,9 @@ from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
 
+classes = {"Amenity": Amenity, "City": City,
+           "Place": Place, "Review": Review, "State": State, "User": User}
+
 
 class DBStorage:
     """ create tables in environmental"""
@@ -41,7 +44,7 @@ class DBStorage:
             returns a dictionary of __object
         """
         dic = {}
-        if cls:
+        if cls and cls in classes:
             if type(cls) is str:
                 cls = eval(cls)
             query = self.__session.query(cls)
