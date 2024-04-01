@@ -26,13 +26,14 @@ class FileStorage:
 
     def all(self, cls=None):
         """returns the dictionary __objects"""
-        if cls and cls in classes:
-            new_dict = {}
-            for key, value in self.__objects.items():
-                if cls == value.__class__:
-                    new_dict[key] = value
-            return new_dict
-        return self.__objects
+        if not cls:
+            return self.__objects
+        elif type(cls) == str:
+            return {k: v for k, v in self.__objects.items()
+                    if v.__class__.__name__ == cls}
+        else:
+            return {k: v for k, v in self.__objects.items()
+                    if v.__class__ == cls}
 
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
@@ -91,6 +92,9 @@ class FileStorage:
         matching the given class. If no class is passed,
         returns the count of all objects in storage.
         """
-
-        objs = self.all(cls)
-        return len(objs) if objs is not None else 0
+        total = 0
+        if cls:
+            total = len(self.all(cls))
+        else:
+            total = len(self.__objects)
+        return total
