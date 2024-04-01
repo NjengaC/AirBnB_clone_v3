@@ -90,5 +90,7 @@ class DBStorage:
         if cls is None:
             return len(self.all())
         else:
-            if cls in classes.values():
+            if type(cls) == str:
+                cls = eval(cls)
+            if cls in classes:
                 return len(self.all(cls))
