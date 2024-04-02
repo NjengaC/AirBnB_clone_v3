@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 #Connects to ubuntu server
-ssh ubuntu@54.144.140.209
+ssh ubuntu@34.229.137.208
